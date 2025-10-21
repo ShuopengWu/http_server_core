@@ -6,13 +6,38 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
-
+#include <iostream>
+#include <mutex>
 #include "util.h"
+
+namespace
+{
+static std::string LOCAL_RED    =   "\033[31;1m";
+static std::string LOCAL_YELLOW	=   "\033[0;33m";
+static std::string LOCAL_GREEN	=	"\033[0;32m";
+static std::string LOCAL_BULE	=	"\033[0;34m";
+static std::string LOCAL_BLACK  =	"\033[0m";
+
+static constexpr size_t MAX_TIME_STR_LEN    =   15;
+static constexpr size_t MAX_LEVEL_STR_LEN   =   9;
+}
 
 namespace logger
 {
 
-enum class time_format
+enum class logger_level
+{
+    error,
+    warning,
+    info,
+    debug,
+    normal
+};
+
+
+class logger
+{
+    enum class time_format
 {
     year = 0b100000,
     month = 0b010000,
@@ -25,10 +50,25 @@ enum class time_format
     all = full_date_format | time_format
 };
 
-class logger
-{
 public:
-    static std::string getTimeStr(time_format format);
+    static logger &instance();
+    void show_error_log(std::string s, bool is_need_align = true);
+    void show_waring_log(std::string s, bool is_need_align = true);
+    void show_info_log(std::string s, bool is_need_align = true);
+    void show_debug_log(std::string s, bool is_need_align = true);
+    void set_min_logger_level(logger_level l);
+private:
+    logger();
+    void show_log(const std::string &s, logger_level l, bool is_need_align);
+    void align_format(std::string &s, int align_size);
+    std::string get_time_str(time_format format);
+    std::string get_color_str(logger_level l);
+    std::string get_level_str(logger_level l);
+
+private:
+    std::mutex show_log_mutex;
+    logger_level min_logger_level;
+    bool is_need_save_to_file;
 };
 
 }
