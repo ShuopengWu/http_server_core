@@ -33,7 +33,7 @@ std::pair<bool, std::string> IFile::read_for_file()
     {
         // 高效读取整个文件内容
         std::string file_content = std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
-        logger.show_info_log("Read for file " + filename + " bytes : " + std::to_string(filename.size()));
+        logger.show_info_log("Read for file " + filename + " bytes : " + std::to_string(file_content.size()));
         return std::pair<bool, std::string>(true, std::move(file_content));
     }
     catch (std::exception &e)
