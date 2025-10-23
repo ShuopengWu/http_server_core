@@ -9,7 +9,7 @@
 
 namespace
 {
-static std::string DEFAULT_IP = INADDR_ANY;
+static std::string DEFAULT_IP = "";
 static constexpr uint16_t DEFAULT_PORT = 10088;
 }
 

@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 project(http_server_core LANGUAGES CXX)
 
+# for gdb debug
+set(CAMKE_CXX_FLAGS_DEBUG "-g -O0")
+
 # Make relative paths based on the current CMakeLists.txt file
 cmake_policy(SET CMP0076 NEW)
 
