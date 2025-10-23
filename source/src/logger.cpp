@@ -12,7 +12,7 @@ logger::logger() :
 
 std::string logger::get_time_str(time_format format)
 {
-    std::time_t time = util::getCurrentTime();
+    std::time_t time = getCurrentTime();
     std::string format_str;
     std::tm time_struct;
 
@@ -83,8 +83,30 @@ void logger::show_log(const std::string &s, logger_level l, bool is_need_align)
     };
 
     add_log(get_level_str(l), MAX_LEVEL_STR_LEN);
-    // add_log(get_time_str(time_format::all), MAX_TIME_STR_LEN);
-    ss << s;
+    add_log(get_time_str(time_format::all), MAX_TIME_STR_LEN);
+
+    if (s.size() >= 1 && s.back() == '\n')
+    {
+        std::string str = s;
+        str.resize(str.size() - 1);
+
+        if (str.size() >= 1 && str.back() == '\r')
+            str.resize(str.size() - 1);
+        
+        if (str.size() >= 1 && str.back() != '.')
+            str.push_back('.');
+        ss << str;
+    }
+    else {
+        if (s.size() >= 1 && s.back() != '.')
+        {
+            std::string str = s;
+            str.push_back('.');
+            ss << str;
+        }
+        else
+            ss << s;
+    }
 
     {
         std::unique_lock<std::mutex> lock(show_log_mutex);
@@ -122,4 +144,10 @@ std::string logger::get_level_str(logger_level l)
         default: return "[NORMAL]";
     }
 }
+std::time_t logger::getCurrentTime()
+{
+    std::chrono::time_point now = std::chrono::system_clock::now();
+    return std::chrono::system_clock::to_time_t(now);
+}
+
 }

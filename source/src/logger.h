@@ -8,7 +8,7 @@
 #include <ctime>
 #include <iostream>
 #include <mutex>
-#include "util.h"
+#include <chrono>
 
 namespace
 {
@@ -57,6 +57,10 @@ public:
     void show_info_log(std::string s, bool is_need_align = true);
     void show_debug_log(std::string s, bool is_need_align = true);
     void set_min_logger_level(logger_level l);
+    logger(const logger &) = delete;
+    logger(const logger &&) = delete;
+    void operator = (const logger &) = delete;
+    void operator = (const logger &&) = delete;
 private:
     logger();
     void show_log(const std::string &s, logger_level l, bool is_need_align);
@@ -64,6 +68,7 @@ private:
     std::string get_time_str(time_format format);
     std::string get_color_str(logger_level l);
     std::string get_level_str(logger_level l);
+    std::time_t getCurrentTime();
 
 private:
     std::mutex show_log_mutex;
