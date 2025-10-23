@@ -4,7 +4,7 @@
 #include "src/isocket.h" 
 
 // --- 宏定义测试参数 ---
-const std::string TEST_IP = "127.0.0.1";
+const std::string TEST_IP = "0.0.0.0";
 const uint16_t TEST_PORT = 8080;
 
 int main() {

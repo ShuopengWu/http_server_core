@@ -28,3 +28,14 @@ const sockaddr_in &InetAddress::get_addr() const
 {
     return addr;
 }
+
+std::string InetAddress::to_string() const
+{
+    char ip[INET_ADDRSTRLEN];
+    const char *result = inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
+    if (result == nullptr)
+        return "Unknown ip address";
+    
+    uint16_t port = ntohs(addr.sin_port);
+    return std::string(ip) + ":" + std::to_string(port);
+}

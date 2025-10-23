@@ -30,8 +30,9 @@ void ISocket::bind(const InetAddress &inetaddr)
     int result = ::bind(socket_fd, (sockaddr *)&addr, sizeof(addr));
     util::error_assert(result != -1, "Socket bind failed");
 
-    logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " bound to address.");
+    logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " bound to address in " + inetaddr.to_string());
 }
+
 
 void ISocket::listen(int backlog)
 {
@@ -69,6 +70,6 @@ void ISocket::set_socket_reusaddr()
     int result = setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
     if (result == -1)
         logger::logger::instance().show_waring_log("Failed to set socket port reuse");
-        else
+    else
         logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " set SO_REUSEADDR successfully.");
 }
