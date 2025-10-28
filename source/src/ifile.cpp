@@ -1,5 +1,7 @@
 #include "ifile.h"
 
+#include "logger.h"
+
 namespace util
 {
 

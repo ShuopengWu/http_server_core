@@ -5,8 +5,6 @@
 #include <string>
 #include <cstring>
 
-#include "logger.h"
-
 namespace
 {
 static std::string DEFAULT_IP = "";

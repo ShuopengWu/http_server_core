@@ -1,5 +1,7 @@
 #include "inetaddress.h"
 
+#include "logger.h"
+
 InetAddress::InetAddress(const std::string &ip, uint16_t port)
 {
     memset(&addr, 0, sizeof(addr));

@@ -6,7 +6,8 @@
 #include <fcntl.h>  //file control 文件控制
 
 #include "util.h"
-#include "inetaddress.h"
+
+class InetAddress;
 
 namespace
 {
