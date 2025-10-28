@@ -6,7 +6,6 @@
 #include <filesystem>
 
 #include "util.h"
-#include "logger.h"
 
 namespace util
 {
