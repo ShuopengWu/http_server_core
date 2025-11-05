@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <cerrno>
 #include <cstring>
+#include <unistd.h>
 #include "logger.h"
 
 namespace util
@@ -43,6 +44,15 @@ static std::string get_absoute_path(const std::string &filename)
         logger::logger &log = logger::logger::instance();
         log.show_error_log("Fail to get absoute path : " + std::string(e.what()));
         return "";
+    }
+}
+
+static void close_fd(int &fd)
+{
+    if (fd != -1)
+    {
+        close(fd);
+        fd = -1;
     }
 }
 

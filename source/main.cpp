@@ -1,47 +1,123 @@
-#include <iostream>
-#include <vector>
-#include <functional>
+#include <sys/socket.h>
+#include <errno.h>
+#include <map>
+#include <memory>
 
-#include "src/threadpool.h"
-#include "src/logger.h"
+#include "src/isocket.h"
+#include "src/inetaddress.h"
+#include "iepoll.h"
+
+static std::map<int, std::unique_ptr<ISocket>> connection_map;
+
+void connection_event_handler(IEpoll &epoll, ISocket &server_socket)
+{
+    logger::logger &log = logger::logger::instance();
+    std::pair<int, InetAddress> addr_pair;
+
+    while (true)
+    {
+        addr_pair = server_socket.accept();
+        if (addr_pair.first != -1)
+        {
+            std::unique_ptr<ISocket> client_socket = std::make_unique<ISocket>(addr_pair.first);
+            client_socket->set_nonblocking();
+            log.show_info_log("new connection : " + addr_pair.second.to_string());
+            epoll.add_fd(client_socket->get_socket_fd(), EPOLLIN | EPOLLET);
+            connection_map[addr_pair.first] = std::move(client_socket);
+        }
+        else if (errno == EAGAIN || errno == EWOULDBLOCK)   // 接受完毕
+        {
+            return;
+        }
+        else                                                // 发生错误
+        {
+            logger::logger::instance().show_waring_log("Accept error");
+            break;
+        }
+    }
+}
+
+void read_event_handler(IEpoll &epoll, int socket_fd)
+{
+    char received_buffer[1024];
+    int received_bytes = -1;
+
+    while (true)
+    {
+        received_bytes = ::recv(socket_fd, received_buffer, sizeof(received_buffer), 0);
+
+        if (received_bytes > 0) // 收到数据，继续读取
+        {
+            logger::logger::instance().show_info_log("Recived data, message : """ + std::string(received_buffer, received_bytes) + """");
+            
+            // do echo
+            ssize_t bytes_sent = ::send(socket_fd, received_buffer, received_bytes, 0);
+
+            if (bytes_sent == -1)
+            {
+                break;
+            }
+            continue;
+        }
+        else if (received_bytes == 0) // 客户端优雅关闭
+        {
+            break;
+        }
+        else // 发生错误
+        {
+            break;
+        }
+    }
+        logger::logger::instance().show_info_log("Connection on FD: " + std::to_string(socket_fd) + " closed.");
+        epoll.delete_fd(socket_fd);
+        if (connection_map.count(socket_fd))
+            connection_map.erase(socket_fd);
+}
 
 int main()
 {
-    ThreadPool pool;
-    std::vector<std::future<int>> futures; // 存储所有任务的 future
+    ISocket socket;
+    socket.set_nonblocking();
 
-    // 假设 MAX_TASKS 是一个合理的并发数量，例如 1000
-    const int MAX_TASKS = 1000;
-    
-    // 任务：模拟耗时的计算，并返回结果
-    auto long_running_task = [](int id) -> int {
-        // 模拟计算，无需锁，让线程并行执行
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        return id * 2;
-    };
-    
-    std::cout << "主线程: 开始提交任务...\n";
+    InetAddress addr;
+    socket.bind(addr);
 
-    // 1. 批量提交任务
-    for (int i = 0; i < MAX_TASKS; ++i) {
-        // 提交任务，将 future 存储起来
-        futures.push_back(pool.submit_task(long_running_task, i));
-    }
+    socket.listen();
+    IEpoll epoll;
+    epoll.add_fd(socket.get_socket_fd(), EPOLLIN | EPOLLET);
 
-    std::cout << "主线程: 所有任务已提交，继续执行其他操作...\n";
-    // 主线程可以在这里做其他工作，例如处理 UI 事件等
-
-    // 2. 集中等待结果 (同步点)
-    std::cout << "主线程: 等待所有任务完成并获取结果...\n";
-    for (auto& future : futures) {
-        try {
-            int result = future.get(); // 此时才阻塞等待
-            std::cout << "Task result: " << result << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << "Task threw exception: " << e.what() << std::endl;
+    std::vector<epoll_event> events(1000);
+    int event_numbers = -1;
+    while (true)
+    {
+        event_numbers = epoll.poll(events.data(), events.size());
+        if (event_numbers == -1)
+        {
+            logger::logger::instance().show_waring_log("Epoll poll may has a trouble");
+            continue;
+        }
+        else if (event_numbers == 0)
+            continue;
+        else
+        {
+            for (int i = 0; i < event_numbers; i++)
+            {
+                if (events[i].data.fd == socket.get_socket_fd()) // new connection
+                {
+                    connection_event_handler(epoll, socket);
+                }
+                else if (events[i].events & EPOLLIN) // read event
+                {
+                    read_event_handler(epoll, events[i].data.fd);
+                }
+                else
+                {
+                    // TBD
+                    continue;
+                }
+            }
         }
     }
 
-    std::cout << "主线程: 所有任务完成，线程池测试结束。\n";
-    return 0;
+    return EXIT_SUCCESS;
 }
