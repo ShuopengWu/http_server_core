@@ -11,14 +11,23 @@ ISocket::ISocket()
     logger::logger::instance().show_debug_log("Socket created successfully. FD: " + std::to_string(socket_fd));
 }
 
+ISocket::ISocket(int fd)
+{
+    if (fd == -1)
+    {
+        socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+        util::error_assert_with_errno(socket_fd != -1, "Create socket failed");
+        set_socket_reusaddr();
+
+        logger::logger::instance().show_waring_log("Socket created recived a invaild Id. Create a new FD: " + std::to_string(socket_fd));
+    }
+    socket_fd = fd;
+}
+
 ISocket::~ISocket()
 {
-    if (socket_fd != -1)
-    {
-        close(socket_fd);
-
-        logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " closed successfully.");
-    }
+    util::close_fd(socket_fd);
+    logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " closed successfully.");
 }
 
 int ISocket::get_socket_fd() const

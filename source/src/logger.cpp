@@ -84,7 +84,8 @@ void logger::show_log(const std::string &s, logger_level l, bool is_need_align)
 
     add_log(get_level_str(l), MAX_LEVEL_STR_LEN);
     add_log(get_time_str(time_format::all), MAX_TIME_STR_LEN);
-
+    ss << " ";
+ 
     if (s.size() >= 1 && s.back() == '\n')
     {
         std::string str = s;

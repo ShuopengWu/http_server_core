@@ -3,6 +3,7 @@ target_sources(http_server_core PRIVATE
                 "inetaddress.cpp"
                 "logger.cpp"
                 "ifile.cpp"
-                "threadpool.cpp")
+                "threadpool.cpp"
+                "iepoll.cpp")
 
 target_include_directories(http_server_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

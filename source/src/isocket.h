@@ -19,6 +19,7 @@ class ISocket
 {
 public:
     ISocket();
+    ISocket(int fd);
     ~ISocket();
     int get_socket_fd() const;
     void bind(const InetAddress &inetaddr);
