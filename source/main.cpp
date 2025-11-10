@@ -40,7 +40,7 @@ void connection_event_handler(IEpoll *epoll, Channel *channel)
         }
         else // 发生错误
         {
-            log.show_waring_log("Accept error");
+            log.show_warning_log("Accept error");
             break;
         }
     }
@@ -64,7 +64,7 @@ void read_event_handler(IEpoll *epoll, Channel *channel)
   
             if (status == echo_status::ERROR_ECHO)
             {
-                logger::logger::instance().show_waring_log("Write error on buffered data on FD: " + std::to_string(socket_fd));
+                logger::logger::instance().show_warning_log("Write error on buffered data on FD: " + std::to_string(socket_fd));
                 close_handler(epoll, channel);
                 return;
             }
@@ -107,7 +107,7 @@ void write_event_handler(IEpoll *epoll, Channel *channel)
             return;
         else // 发生错误
         {
-            logger::logger::instance().show_waring_log("Write error on buffered data on FD: " + std::to_string(socket_fd));
+            logger::logger::instance().show_warning_log("Write error on buffered data on FD: " + std::to_string(socket_fd));
             close_handler(epoll, channel);
 
             return;

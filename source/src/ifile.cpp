@@ -107,7 +107,7 @@ bool IFile::create_file()
 
     if (is_file_exist())
     {
-        logger.show_waring_log("Can not create file " + filename + " because file is already existed.");
+        logger.show_warning_log("Can not create file " + filename + " because file is already existed.");
         return true;
     }
 

@@ -12,7 +12,7 @@
 
 namespace
 {
-static size_t MAX_WOKRER_NUMBER = 10;
+static size_t MAX_WORKER_NUMBER = 10;
 }
 
 class ThreadPool
