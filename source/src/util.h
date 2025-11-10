@@ -7,25 +7,40 @@
 #include <unistd.h>
 #include "logger.h"
 
+#define DECLARE_PROPERTY(TYPE, NAME) \
+private: \
+    TYPE NAME; \
+public: \
+    inline TYPE get_##NAME() const { return NAME; } \
+    inline void set_##NAME(TYPE other) { NAME = other; }
+
+#define DECLARE_ONLY_READ_PROPERTY(TYPE, NAME) \
+private: \
+    TYPE NAME; \
+public: \
+    inline TYPE get_##NAME() const { return NAME; }
+
 namespace util
 {
-static void error_assert(bool condition, std::string error_message)
+static void error_assert(bool condition, std::string error_message, bool is_need_exit = true)
 {
     if (!condition)
     {
         logger::logger &log = logger::logger::instance();
         log.show_error_log(error_message);
-        exit(EXIT_FAILURE);
+        if (is_need_exit)
+            exit(EXIT_FAILURE);
     }
 }
 
-static void error_assert_with_errno(bool condition, std::string error_message)
+static void error_assert_with_errno(bool condition, std::string error_message, bool is_need_exit = true)
 {
     if (!condition)
     {
         logger::logger &log = logger::logger::instance();
         log.show_error_log(error_message + ", errno state is : " + std::strerror(errno));
-        exit(EXIT_FAILURE);
+        if (is_need_exit)
+            exit(EXIT_FAILURE);
     }
 }
 

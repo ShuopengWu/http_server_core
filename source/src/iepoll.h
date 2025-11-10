@@ -4,6 +4,8 @@
 #include <sys/epoll.h>
 #include <vector>
 
+class Channel;
+
 namespace
 {
 static constexpr int DEFAULT_TIMEOUT = -1;
@@ -15,11 +17,12 @@ class IEpoll
 public:
     IEpoll();
     ~IEpoll();
-    void add_fd(int fd, uint32_t event_type);
+    void update_channel(Channel *channel);
     void delete_fd(int fd);
-    int poll(epoll_event *events, int max_event_size = MAX_EVENT_SIZE, int timeout = DEFAULT_TIMEOUT);
+    int poll(std::vector<Channel *> &channels, size_t max_event_size = MAX_EVENT_SIZE, int timeout = DEFAULT_TIMEOUT);
 private:
     int epoll_fd;
+    std::vector<epoll_event> events;
 };
 
 #endif
