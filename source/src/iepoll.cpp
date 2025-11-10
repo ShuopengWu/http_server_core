@@ -2,6 +2,7 @@
 
 #include "util.h"
 #include "logger.h"
+#include "channel.h"
 
 IEpoll::IEpoll()
 {
@@ -14,13 +15,25 @@ IEpoll::~IEpoll()
     util::close_fd(epoll_fd);
 }
 
-void IEpoll::add_fd(int fd, uint32_t event_type)
+void IEpoll::update_channel(Channel *channel)
 {
+    int fd = channel->get_socket_fd();
     epoll_event event;
-    event.data.fd = fd;
-    event.events = event_type;
-    int result = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
-    util::error_assert_with_errno(result != -1, "Add epoll failed");
+    memset(&event, 0, sizeof(epoll_event));
+    event.data.ptr = channel;
+    event.events = channel->get_events();
+
+    if (channel->get_is_in_epoll())
+    {
+        int result = epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &event);
+        util::error_assert_with_errno(result != -1, "Epoll ctl failed");
+    }
+    else
+    {
+        int result = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
+        util::error_assert_with_errno(result != -1, "Epoll ctl failed");
+        channel->set_is_in_epoll(true);
+    }
 }
 
 void IEpoll::delete_fd(int fd)
@@ -33,12 +46,25 @@ void IEpoll::delete_fd(int fd)
     }
 }
 
-int IEpoll::poll(epoll_event *events, int max_event_size, int timeout)
+int IEpoll::poll(std::vector<Channel *> &channels, size_t max_event_size, int timeout)
 {
-    if (events == nullptr || max_event_size == 0)
-        return -1;
+    if (max_event_size == 0)
+        return 0;
 
-    int result = epoll_wait(epoll_fd, events, max_event_size, timeout);
-    util::error_assert_with_errno(result != -1, "Find a error in epoll wait");
+    events.resize(max_event_size);
+
+    channels.clear();
+
+    int result = epoll_wait(epoll_fd, events.data(), max_event_size, timeout);
+
+    util::error_assert_with_errno(result != -1, "Epoll wiat find a error :", false);
+
+    for (int i = 0; i < result; i++)
+    {
+        Channel* channel = static_cast<Channel *>(events[i].data.ptr);
+        channel->set_revents(events[i].events);
+        channels.push_back(channel);
+    }
+
     return result;
 }

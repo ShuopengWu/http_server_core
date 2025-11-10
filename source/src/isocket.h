@@ -17,18 +17,17 @@ static constexpr int DEFAULT_BACKLOG = 0x0400;
 
 class ISocket
 {
+DECLARE_ONLY_READ_PROPERTY(int, socket_fd)
 public:
     ISocket();
     ISocket(int fd);
     ~ISocket();
-    int get_socket_fd() const;
     void bind(const InetAddress &inetaddr);
     void listen(int backlog = DEFAULT_BACKLOG);
     void set_nonblocking();
     std::pair<int, InetAddress> accept();
 private:
     void set_socket_reusaddr();
-    int socket_fd;
 };
 
 #endif
