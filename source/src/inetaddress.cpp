@@ -15,7 +15,7 @@ InetAddress::InetAddress(const std::string &ip, uint16_t port)
     {
         if (!inet_pton(AF_INET, ip.c_str(), &addr.sin_addr))
         {
-            logger::logger::instance().show_waring_log("Invalid IP address provided: " + ip + ". Defaulting to INADDR_ANY.");
+            logger::logger::instance().show_warning_log("Invalid IP address provided: " + ip + ". Defaulting to INADDR_ANY.");
             addr.sin_addr.s_addr = htonl(INADDR_ANY);
         }
     }

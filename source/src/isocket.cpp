@@ -20,8 +20,8 @@ ISocket::ISocket(int fd)
 
 ISocket::~ISocket()
 {
-    util::close_fd(socket_fd);
     logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " closed successfully.");
+    util::close_fd(socket_fd);
 }
 
 void ISocket::bind(const InetAddress &inetaddr)
@@ -69,7 +69,7 @@ void ISocket::set_socket_reusaddr()
     int option_value = 1; // true
     int result = setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
     if (result == -1)
-        logger::logger::instance().show_waring_log("Failed to set socket port reuse");
+        logger::logger::instance().show_warning_log("Failed to set socket port reuse");
     else
         logger::logger::instance().show_debug_log("Socket FD: " + std::to_string(socket_fd) + " set SO_REUSEADDR successfully.");
 }

@@ -5,7 +5,7 @@
 ThreadPool::ThreadPool() : is_exit(false)
 {
     // 使用emplaceback原地构造，而不是pushback拷贝(std::function不可复制)
-    for (int i = 0; i < MAX_WOKRER_NUMBER; i++)
+    for (int i = 0; i < MAX_WORKER_NUMBER; i++)
         workers.emplace_back([this] {
             this->worker_main();
         });
@@ -20,7 +20,7 @@ ThreadPool::~ThreadPool()
 
     condition.notify_all();
 
-    for (int i = 0; i < MAX_WOKRER_NUMBER; i++)
+    for (int i = 0; i < MAX_WORKER_NUMBER; i++)
     {
         if (workers.at(i).joinable())
             workers.at(i).join();
@@ -59,11 +59,11 @@ void ThreadPool::worker_main()
         }
         catch(const std::exception& e)
         {
-            log.show_waring_log("Thread throws a std exception, thread id is : " + thread_id + " exception is : " + e.what());
+            log.show_warning_log("Thread throws a std exception, thread id is : " + thread_id + " exception is : " + e.what());
         }
         catch (...)
         {
-            log.show_waring_log("Thread throws a unknown exception, thread id is : " +  thread_id);
+            log.show_warning_log("Thread throws a unknown exception, thread id is : " +  thread_id);
         }
     }
 }

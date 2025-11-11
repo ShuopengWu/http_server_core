@@ -42,7 +42,7 @@ void IEpoll::delete_fd(int fd)
 
     if (result < 0)
     {
-        logger::logger::instance().show_waring_log("Epoll delete fd : " + std::to_string(fd) + " failed");
+        logger::logger::instance().show_warning_log("Epoll delete fd : " + std::to_string(fd) + " failed");
     }
 }
 
@@ -57,7 +57,7 @@ int IEpoll::poll(std::vector<Channel *> &channels, size_t max_event_size, int ti
 
     int result = epoll_wait(epoll_fd, events.data(), max_event_size, timeout);
 
-    util::error_assert_with_errno(result != -1, "Epoll wiat find a error :", false);
+    util::error_assert_with_errno(result != -1, "Epoll wait find a error :", false);
 
     for (int i = 0; i < result; i++)
     {

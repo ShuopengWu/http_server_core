@@ -49,7 +49,7 @@ void logger::show_error_log(std::string s, bool is_need_align)
     show_log(s, logger_level::error, is_need_align);
 }
 
-void logger::show_waring_log(std::string s, bool is_need_align)
+void logger::show_warning_log(std::string s, bool is_need_align)
 {
     show_log(s, logger_level::warning, is_need_align);
 }

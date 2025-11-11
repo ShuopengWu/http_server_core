@@ -53,7 +53,7 @@ class logger
 public:
     static logger &instance();
     void show_error_log(std::string s, bool is_need_align = true);
-    void show_waring_log(std::string s, bool is_need_align = true);
+    void show_warning_log(std::string s, bool is_need_align = true);
     void show_info_log(std::string s, bool is_need_align = true);
     void show_debug_log(std::string s, bool is_need_align = true);
     void set_min_logger_level(logger_level l);
