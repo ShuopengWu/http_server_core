@@ -35,9 +35,19 @@ void EpollLoop::loop()
         
         for (int i = 0; i < result; i++)
         {
-	    if (channels[i])
-                channels[i]->handle_event();
+            channels[i]->handle_event();
         }
+
+        for (int i = 0; i < need_remove_fds.size(); i++)
+        {
+            if (auto it = connection_map.find(need_remove_fds[i]); it != connection_map.end())
+            {
+                epoll->delete_fd(it->first);
+                connection_map.erase(it);
+            }
+        }
+
+        need_remove_fds.clear();
     }
     
 }
@@ -62,9 +72,8 @@ void EpollLoop::remove_channel(Channel *channel)
     int key = channel->get_socket_fd();
     if (connection_map.find(key) != connection_map.end())
     {
-	channel->set_is_in_epoll(false);
-        epoll->delete_fd(key);
-        connection_map.erase(key);
+	    channel->set_is_in_epoll(false);
+        need_remove_fds.push_back(key);
     }
 }
 

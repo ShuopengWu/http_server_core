@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <map>
+#include <vector>
 
 class IEpoll;
 class Channel;
@@ -24,6 +25,7 @@ private:
     std::unique_ptr<IEpoll> epoll;
     bool is_stop;
     std::map<int, std::unique_ptr<Channel>> connection_map;
+    std::vector<int> need_remove_fds;
 };
 
 #endif

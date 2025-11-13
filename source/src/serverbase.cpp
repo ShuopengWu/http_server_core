@@ -78,7 +78,7 @@ void ServerBase::read_event_callback(Channel *channel)
         if (received_bytes > 0) // 收到数据，继续读取
         {
             logger::logger::instance().show_info_log("Received data, message: \"" + std::string(received_buffer, received_bytes) + "\" on FD: " + std::to_string(socket_fd));
-            channel->append_recv_buffer(received_buffer);
+            channel->append_recv_buffer(std::string(received_buffer, received_bytes));
 
             continue;
         }
@@ -105,7 +105,7 @@ void ServerBase::read_event_callback(Channel *channel)
 
 void ServerBase::write_event_callback(Channel *channel)
 {
-    std::string send_buffer = channel->get_send_buffer();
+    std::string &send_buffer = channel->get_send_buffer();
     if (send_buffer.empty())
         return;
 

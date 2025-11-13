@@ -66,7 +66,7 @@ void Channel::set_close_callback(callback_t &&callback)
 void Channel::handle_event()
 {
     if (!is_in_epoll)
-	return;
+	    return;
     logger::logger &log = logger::logger::instance();
 
     auto do_callback = [this, &log](callback_t &callback)
