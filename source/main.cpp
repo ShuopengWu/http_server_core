@@ -43,7 +43,7 @@ void TCPEchoServer::on_colse(Channel *channel)
 }
 int main()
 {
-    std::unique_ptr<TCPEchoServer> server = std::make_unique<TCPEchoServer>();
+    std::shared_ptr<TCPEchoServer> server = std::make_shared<TCPEchoServer>();
     server->start();
     return EXIT_SUCCESS;
 }

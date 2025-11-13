@@ -65,6 +65,8 @@ void Channel::set_close_callback(callback_t &&callback)
 
 void Channel::handle_event()
 {
+    if (!is_in_epoll)
+	return;
     logger::logger &log = logger::logger::instance();
 
     auto do_callback = [this, &log](callback_t &callback)
@@ -102,11 +104,7 @@ void Channel::handle_event()
             do_callback(write_callback);
         }
         
-        if (!is_event_occured)
-        {
-            log.show_warning_log("The channel received an unexpected event type");
-            do_callback(close_callback);
-        }
+        
     }
     catch (const std::exception &e)
     {
