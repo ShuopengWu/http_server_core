@@ -7,6 +7,7 @@ target_sources(http_server_core PRIVATE
                 "iepoll.cpp"
 	            "channel.cpp"
                 "epollloop.cpp"
-                "serverbase.cpp")
+                "serverbase.cpp"
+                "acceptor.cpp")
 
 target_include_directories(http_server_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -8,6 +8,7 @@
 #include "isocket.h"
 #include "inetaddress.h"
 #include "channel.h"
+#include "acceptor.h"
 
 class ServerBase
 {
@@ -29,13 +30,13 @@ protected:
     virtual void on_write(Channel *channel) = 0;
     virtual void on_colse(Channel *channel) = 0;
 private:
-    void init_server_channel();
+    void init_acceptor();
     void connection_event_callback(Channel *channel);
     void read_event_callback(Channel *channel);
     void write_event_callback(Channel *channel);
     void close_event_callback(Channel *channel);
     std::unique_ptr<EpollLoop> epoll_loop; 
-    std::unique_ptr<Channel> server_channel;
+    std::unique_ptr<Acceptor> acceptor;
 };
 
 #endif
