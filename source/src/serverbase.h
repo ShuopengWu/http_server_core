@@ -20,7 +20,7 @@ protected:
     enum class read_callback_result
     {
         NONE,
-        DO_WEITE,
+        DO_WRITE,
         DO_CLOSE
     };
 protected:

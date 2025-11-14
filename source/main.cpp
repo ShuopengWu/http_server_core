@@ -7,14 +7,6 @@
 
 class TCPEchoServer : public ServerBase
 {
-private:
-    enum class echo_status
-    {
-        ALL_ECHO,
-        PART_ECHO,
-        ERROR_ECHO
-    };
-
 protected:
     virtual void on_connection(Channel *channel) override;
     virtual read_callback_result on_read(Channel *channel) override;
@@ -32,7 +24,7 @@ TCPEchoServer::read_callback_result TCPEchoServer::on_read(Channel *channel)
     channel->append_send_buffer(recv_buffer);
     recv_buffer.clear();
     channel->enable_writing();
-    return read_callback_result::DO_WEITE;
+    return read_callback_result::DO_WRITE;
 }
 
 void TCPEchoServer::on_write(Channel *channel)

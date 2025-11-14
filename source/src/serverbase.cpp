@@ -82,7 +82,7 @@ void ServerBase::read_event_callback(Channel *channel)
             read_callback_result result = on_read(channel);
             switch (result)
             {
-            case read_callback_result::DO_WEITE:
+            case read_callback_result::DO_WRITE:
                 write_event_callback(channel);
                 break;
             case read_callback_result::DO_CLOSE:
@@ -109,7 +109,7 @@ void ServerBase::read_event_callback(Channel *channel)
                     read_callback_result result = on_read(channel);
                     switch (result)
                     {
-                    case read_callback_result::DO_WEITE:
+                    case read_callback_result::DO_WRITE:
                         write_event_callback(channel);
                         break;
                     case read_callback_result::DO_CLOSE:
