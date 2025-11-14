@@ -11,8 +11,8 @@ ServerBase::~ServerBase()
 
 void ServerBase::start()
 {
-    if (server_channel == nullptr)
-        init_server_channel();
+    if (!acceptor)
+        init_acceptor();
     epoll_loop->start();
 }
 
@@ -21,15 +21,10 @@ void ServerBase::stop()
     epoll_loop->stop();
 }
 
-void ServerBase::init_server_channel()
+void ServerBase::init_acceptor()
 {
-    std::unique_ptr<ISocket> server_socket = std::make_unique<ISocket>();
-    server_socket->set_nonblocking();
-    server_socket->bind(InetAddress());
-    server_socket->listen();
-    server_channel = std::make_unique<Channel>(epoll_loop.get(), std::move(server_socket));
-    server_channel->set_read_callback(std::bind(&ServerBase::connection_event_callback, this, std::placeholders::_1));
-    server_channel->enable_reading();
+    acceptor = std::make_unique<Acceptor>(epoll_loop.get());
+    acceptor->set_accept_callback(std::bind(&ServerBase::connection_event_callback, this, std::placeholders::_1));
 }
 
 void ServerBase::connection_event_callback(Channel *channel)
@@ -83,6 +78,7 @@ void ServerBase::read_event_callback(Channel *channel)
             switch (result)
             {
             case read_callback_result::DO_WRITE:
+                channel->enable_writing();
                 write_event_callback(channel);
                 break;
             case read_callback_result::DO_CLOSE:
@@ -110,6 +106,7 @@ void ServerBase::read_event_callback(Channel *channel)
                     switch (result)
                     {
                     case read_callback_result::DO_WRITE:
+                        channel->enable_writing();
                         write_event_callback(channel);
                         break;
                     case read_callback_result::DO_CLOSE:
