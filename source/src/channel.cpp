@@ -3,7 +3,8 @@
 #include "iepoll.h"
 #include "epollloop.h"
 
-Channel::Channel(EpollLoop *epoll_loop, std::unique_ptr<ISocket> socket) : belong_epoll_loop(epoll_loop),
+Channel::Channel(EpollLoop *epoll_loop, std::unique_ptr<ISocket> socket) :
+	belong_epoll_loop(epoll_loop),
     socket(std::move(socket)),
     is_in_epoll(false)
 {
@@ -145,3 +146,4 @@ void Channel::append_recv_buffer(const std::string &data)
 {
     recv_buffer.append(data);
 }
+
