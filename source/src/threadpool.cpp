@@ -14,7 +14,7 @@ ThreadPool::ThreadPool() : is_exit(false)
 ThreadPool::~ThreadPool()
 {
     {
-        std::unique_lock<std::mutex> lock;
+        std::unique_lock<std::mutex> lock(mutex);
         is_exit = true;
     }
 

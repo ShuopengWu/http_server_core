@@ -11,7 +11,7 @@ fi
 
 cd "$BUILD_DIR"
 
-cmake ../"$SOURCE_DIR"
+cmake -DCMAKE_BUILD_TYPE=Debug ../"$SOURCE_DIR"
 
 if [ $? -ne 0 ]; then
     echo "ERROR: CMake configuration failed."
