@@ -79,6 +79,19 @@ void ServerBase::read_event_callback(Channel *channel)
         {
             logger::logger::instance().show_info_log("Received data, message: \"" + std::string(received_buffer, received_bytes) + "\" on FD: " + std::to_string(socket_fd));
             channel->append_recv_buffer(std::string(received_buffer, received_bytes));
+            read_callback_result result = on_read(channel);
+            switch (result)
+            {
+            case read_callback_result::DO_WEITE:
+                write_event_callback(channel);
+                break;
+            case read_callback_result::DO_CLOSE:
+                close_event_callback(channel);
+                break;
+            case read_callback_result::NONE:
+            default:
+                break;
+            }
 
             continue;
         }
@@ -89,11 +102,23 @@ void ServerBase::read_event_callback(Channel *channel)
         }
         else
         {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) // 本次读取完成，正常退出
+            if (errno == EAGAIN || errno == EWOULDBLOCK) // 缓存已满
             {
                 if (!channel->get_recv_buffer().empty())
                 {
-                    on_read(channel);
+                    read_callback_result result = on_read(channel);
+                    switch (result)
+                    {
+                    case read_callback_result::DO_WEITE:
+                        write_event_callback(channel);
+                        break;
+                    case read_callback_result::DO_CLOSE:
+                        close_event_callback(channel);
+                        break;
+                    case read_callback_result::NONE:
+                    default:
+                        break;
+                    }
                 }
                 return;
             }

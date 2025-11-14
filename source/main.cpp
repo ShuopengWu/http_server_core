@@ -17,7 +17,7 @@ private:
 
 protected:
     virtual void on_connection(Channel *channel) override;
-    virtual void on_read(Channel *channel) override;
+    virtual read_callback_result on_read(Channel *channel) override;
     virtual void on_write(Channel *channel) override;
     virtual void on_colse(Channel *channel) override;
 };
@@ -26,12 +26,13 @@ void TCPEchoServer::on_connection(Channel *channel)
 {
 }
 
-void TCPEchoServer::on_read(Channel *channel)
+TCPEchoServer::read_callback_result TCPEchoServer::on_read(Channel *channel)
 {
     std::string &recv_buffer = channel->get_recv_buffer();
     channel->append_send_buffer(recv_buffer);
     recv_buffer.clear();
     channel->enable_writing();
+    return read_callback_result::DO_WEITE;
 }
 
 void TCPEchoServer::on_write(Channel *channel)

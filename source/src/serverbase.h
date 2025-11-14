@@ -17,11 +17,17 @@ public:
     void start();
     void stop();
 protected:
+    enum class read_callback_result
+    {
+        NONE,
+        DO_WEITE,
+        DO_CLOSE
+    };
+protected:
     virtual void on_connection(Channel *channel) = 0;
-    virtual void on_read(Channel *channel) = 0;
+    virtual read_callback_result on_read(Channel *channel) = 0;
     virtual void on_write(Channel *channel) = 0;
     virtual void on_colse(Channel *channel) = 0;
-    
 private:
     void init_server_channel();
     void connection_event_callback(Channel *channel);
